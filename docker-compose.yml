@@ -1,0 +1,45 @@
+# Standalone compose for this repo's own database lifecycle (migrations, seeds,
+# backups) — lms-infra composes this alongside the other per-context repos later
+# (ADR-006-repo-per-context-decomposition.md), reusing these same service blocks.
+services:
+  membership-db:
+    image: postgres:16-alpine
+    container_name: membership-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lms_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lms_password}
+      POSTGRES_DB: membership_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lms_user} -d membership_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - membership-db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - lms-network
+
+  membership-migrate:
+    image: migrate/migrate:v4.17.1
+    container_name: membership-migrate
+    volumes:
+      - ./migrations:/migrations
+    command:
+      - "-path=/migrations"
+      - "-database=postgres://${POSTGRES_USER:-lms_user}:${POSTGRES_PASSWORD:-lms_password}@membership-db:5432/membership_db?sslmode=disable"
+      - "up"
+    depends_on:
+      membership-db:
+        condition: service_healthy
+    networks:
+      - lms-network
+
+volumes:
+  membership-db-data:
+
+networks:
+  lms-network:
+    driver: bridge
