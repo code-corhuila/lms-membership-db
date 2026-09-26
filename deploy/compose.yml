@@ -1,6 +1,7 @@
-# Standalone compose for this repo's own database lifecycle (migrations, seeds,
-# backups) — lms-infra composes this alongside the other per-context repos later
-# (ADR-006-repo-per-context-decomposition.md), reusing these same service blocks.
+# This domain's own PostgreSQL instance and its Liquibase migration executor —
+# rules/2-anexos/A-db-postgres.md. lms-infra composes this alongside the other
+# per-context repos later (ADR-006-repo-per-context-decomposition.md), reusing
+# these same service blocks.
 services:
   membership-db:
     image: postgres:16-alpine
@@ -23,14 +24,17 @@ services:
       - lms-network
 
   membership-migrate:
-    image: migrate/migrate:v4.17.1
+    image: liquibase/liquibase:4.29
     container_name: membership-migrate
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lms_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lms_password}
     volumes:
-      - ./migrations:/migrations
+      - ..:/liquibase/changelog
+    working_dir: /liquibase/changelog
     command:
-      - "-path=/migrations"
-      - "-database=postgres://${POSTGRES_USER:-lms_user}:${POSTGRES_PASSWORD:-lms_password}@membership-db:5432/membership_db?sslmode=disable"
-      - "up"
+      - "--defaultsFile=/liquibase/changelog/deploy/liquibase.properties"
+      - "update"
     depends_on:
       membership-db:
         condition: service_healthy
