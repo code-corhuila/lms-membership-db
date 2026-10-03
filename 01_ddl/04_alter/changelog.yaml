@@ -1,1 +1,16 @@
-databaseChangeLog: []
+databaseChangeLog:
+  - changeSet:
+      id: ddl-alter-001
+      author: OscarAreiza
+      labels: "governance,ddl,alter"
+      comment: "idempotency_key.student_id -> student.id, ON DELETE CASCADE"
+      changes:
+        - sqlFile:
+            path: 001_add_foreign_keys.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/001_add_foreign_keys.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
