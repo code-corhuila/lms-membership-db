@@ -14,3 +14,18 @@ databaseChangeLog:
             path: ../../05_rollbacks/01_ddl/10_indexes/001_create_indexes.rollback.sql
             relativeToChangelogFile: true
             splitStatements: false
+  - changeSet:
+      id: ddl-indexes-002
+      author: OscarAreiza
+      labels: "governance,ddl,indexes"
+      comment: "idempotency_key.student_id — every FK column has its index (rule 3)"
+      changes:
+        - sqlFile:
+            path: 002_create_idempotency_key_indexes.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/10_indexes/002_create_idempotency_key_indexes.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
