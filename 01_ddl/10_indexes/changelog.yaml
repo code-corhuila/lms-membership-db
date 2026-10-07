@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: ddl-indexes-001
+      author: OscarAreiza
+      labels: "HU-02,HU-03,ddl,indexes"
+      comment: "Unique document_id, plus the two partial indexes HU-03's search and HU-06's eligibility check need"
+      changes:
+        - sqlFile:
+            path: 001_create_indexes.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/10_indexes/001_create_indexes.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+  - changeSet:
+      id: ddl-indexes-002
+      author: OscarAreiza
+      labels: "governance,ddl,indexes"
+      comment: "idempotency_key.student_id — every FK column has its index (rule 3)"
+      changes:
+        - sqlFile:
+            path: 002_create_idempotency_key_indexes.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/10_indexes/002_create_idempotency_key_indexes.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
