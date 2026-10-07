@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: ddl-tables-001
+      author: OscarAreiza
+      labels: "HU-02,ddl,tables"
+      comment: "student: the Membership aggregate root. No foreign keys here (none needed)."
+      changes:
+        - sqlFile:
+            path: 001_create_student_table.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/03_tables/001_create_student_table.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+  - changeSet:
+      id: ddl-tables-002
+      author: OscarAreiza
+      labels: "governance,ddl,tables"
+      comment: "idempotency_key: backs durable Idempotency-Key support for POST /students (numeral 5.3.8). student_id FK added in 04_alter."
+      changes:
+        - sqlFile:
+            path: 002_create_idempotency_key_table.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/03_tables/002_create_idempotency_key_table.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false

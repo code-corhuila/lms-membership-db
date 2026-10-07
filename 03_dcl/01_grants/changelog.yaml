@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: dcl-grants-001
+      author: OscarAreiza
+      labels: "governance,dcl,grants"
+      comment: "reader gets SELECT only; writer gets SELECT/INSERT/UPDATE, no DELETE"
+      changes:
+        - sqlFile:
+            path: 001_grants.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/001_grants.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+  - changeSet:
+      id: dcl-grants-002
+      author: OscarAreiza
+      labels: "governance,dcl,grants"
+      comment: "idempotency_key: writer gets SELECT/INSERT only — a key, once saved, is never updated or deleted"
+      changes:
+        - sqlFile:
+            path: 002_grants_idempotency_key.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/002_grants_idempotency_key.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
